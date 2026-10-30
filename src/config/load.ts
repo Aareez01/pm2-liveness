@@ -1,4 +1,4 @@
-import { readFileSync, watch, FSWatcher, existsSync } from 'node:fs';
+import { readFileSync, watch, FSWatcher, existsSync, statSync } from 'node:fs';
 import { extname } from 'node:path';
 import * as yaml from 'js-yaml';
 import { parseConfig, ProbeConfig, ConfigError } from './schema';
@@ -81,27 +81,38 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): LoadedConfig {
 
 /** Watch the sidecar file and reload without restarting the module (debounced). */
 export function watchConfigFile(path: string, onChange: (c: LoadedConfig) => void): FSWatcher | null {
-  try {
-    let timer: NodeJS.Timeout | null = null;
-    const w = watch(path, () => {
-      if (timer) clearTimeout(timer);
-      timer = setTimeout(() => {
-        try {
-          const next = fromFile(path);
-          log.info('configuration reloaded', { path });
-          onChange(next);
-        } catch (err) {
-          // A bad edit must not take the module down - keep running the old config.
-          log.error('config reload failed, keeping previous configuration', {
-            path,
-            error: (err as Error).message,
-          });
-        }
-      }, 1000);
-    });
-    return w;
-  } catch (err) {
-    log.warn('could not watch config file', { path, error: (err as Error).message });
-    return null;
-  }
+  // Deliberately NOT fs.watch. An editor, `sed -i`, or a config-management tool writes a
+  // temp file and renames it over the target, which replaces the inode. fs.watch follows
+  // the inode, so it fires for that rename and is then permanently dead - verified: zero
+  // events for every edit after the first. Polling identity (inode + mtime + size) is
+  // slower to notice and never stops working.
+  let last: string | null = null;
+  const probe = (): string | null => {
+    try {
+      const st = statSync(path);
+      return `${st.ino}:${st.mtimeMs}:${st.size}`;
+    } catch {
+      return null;
+    }
+  };
+  last = probe();
+
+  const timer = setInterval(() => {
+    const now = probe();
+    if (now === null || now === last) return;
+    last = now;
+    try {
+      const next = fromFile(path);
+      log.info('configuration reloaded', { path });
+      onChange(next);
+    } catch (err) {
+      log.error('config reload failed, keeping previous configuration', {
+        path, error: (err as Error).message,
+      });
+    }
+  }, 2000);
+  timer.unref?.();
+
+  // Shaped like an FSWatcher so callers need not care which mechanism is used.
+  return { close: () => clearInterval(timer) } as unknown as FSWatcher;
 }
