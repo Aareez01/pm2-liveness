@@ -1,0 +1,59 @@
+{
+  "name": "pm2-probe",
+  "version": "0.1.0",
+  "description": "Active liveness and readiness probes for PM2. Detects hung-but-alive processes and restarts the failing instance.",
+  "keywords": ["pm2", "pm2-module", "healthcheck", "liveness", "readiness", "probe", "devops"],
+  "license": "MIT",
+  "main": "dist/index.js",
+  "engines": { "node": ">=18" },
+  "files": ["dist", "README.md", "LICENSE"],
+
+  "apps": [
+    {
+      "name": "pm2-probe",
+      "script": "dist/index.js",
+      "instances": 1,
+      "exec_mode": "fork",
+      "autorestart": true,
+      "max_memory_restart": "120M",
+      "kill_timeout": 5000
+    }
+  ],
+
+  "config": {
+    "configFile": "",
+    "apps": "{}",
+    "logLevel": "info",
+    "reconcileSeconds": 30,
+    "endpointEnabled": false,
+    "endpointHost": "127.0.0.1",
+    "endpointPort": 9615
+  },
+
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "clean": "rm -rf dist",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run test/unit",
+    "test:integration": "bash test/integration/run.sh",
+    "prepublishOnly": "npm run clean && npm run build"
+  },
+
+  "dependencies": {
+    "js-yaml": "^4.1.0",
+    "zod": "^3.23.8"
+  },
+  "peerDependencies": {
+    "pm2": ">=5"
+  },
+  "peerDependenciesMeta": {
+    "pm2": { "optional": false }
+  },
+  "devDependencies": {
+    "@types/js-yaml": "^4.0.9",
+    "@types/node": "^22.7.5",
+    "pm2": "^7.1.1",
+    "typescript": "^5.6.3",
+    "vitest": "^2.1.3"
+  }
+}
