@@ -2,15 +2,16 @@
 
 ## Before the first publish
 
-1. **Create the GitHub repository**, then set the URL fields - they are deliberately
-   absent rather than guessed, because a wrong URL in published metadata is worse than
-   none:
+1. ~~Create the GitHub repository and set the URL fields~~ - **done.** The repository,
+   bugs and homepage fields point at `github.com/Aareez01/pm2-liveness`. They were left
+   absent until the repo existed, because a wrong URL in published metadata is worse
+   than none. For reference, the command was:
 
    ```bash
    npm pkg set repository.type=git \
-     repository.url="git+https://github.com/<org>/pm2-liveness.git" \
-     bugs.url="https://github.com/<org>/pm2-liveness/issues" \
-     homepage="https://github.com/<org>/pm2-liveness#readme"
+     repository.url="git+https://github.com/Aareez01/pm2-liveness.git" \
+     bugs.url="https://github.com/Aareez01/pm2-liveness/issues" \
+     homepage="https://github.com/Aareez01/pm2-liveness#readme"
    ```
 
 2. **Confirm the author field.** It is currently `Aareez01`, taken from the git identity
