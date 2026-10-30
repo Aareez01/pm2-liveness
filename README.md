@@ -138,6 +138,10 @@ refusing to probe app  app=api
           shared port to an arbitrary worker, so per-instance probing is not possible
 ```
 
+A trap worth naming: **`pm2 start app.js -i 2 --env PORT=3200` does not do this.** PM2's
+`--env` *selects* an `env_<name>` block; it does not set a variable. `PORT` never reaches
+`pm2_env` at all and the guard fires. Use an ecosystem file with `increment_var`.
+
 Three ways to resolve it:
 
 1. `increment_var: 'PORT'` in your ecosystem config, so each instance binds its own port;
