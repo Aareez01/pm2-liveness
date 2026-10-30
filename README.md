@@ -229,6 +229,14 @@ run `pm2 restart pm2-probe` after.
 
 ---
 
+## Design documentation
+
+- [`docs/requirements.md`](./docs/requirements.md) — the requirements this module was built
+  against, including the reasoning behind the safety rails and two requirements that were
+  revised once the implementation met reality.
+- The shared platform findings and the `pm2-probe:status` wire contract live in the
+  **`pm2-ops-contract`** repository, because `pm2-alertmanager` is bound by the same contract.
+
 ## Development
 
 ```bash
