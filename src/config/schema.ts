@@ -120,7 +120,7 @@ export type LoopLagProbeDef = z.infer<typeof loopLagProbe>;
 
 export class ConfigError extends Error {
   constructor(public readonly issues: string[]) {
-    super(`invalid pm2-probe configuration:\n  - ${issues.join('\n  - ')}`);
+    super(`invalid pm2-liveness configuration:\n  - ${issues.join('\n  - ')}`);
     this.name = 'ConfigError';
   }
 }

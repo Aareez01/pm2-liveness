@@ -12,7 +12,7 @@ export function setLogLevel(level: LogLevel): void {
 
 function write(level: LogLevel, msg: string, fields?: Record<string, unknown>): void {
   if (ORDER[level] < threshold) return;
-  const line = { ts: new Date().toISOString(), level, mod: 'pm2-probe', msg, ...fields };
+  const line = { ts: new Date().toISOString(), level, mod: 'pm2-liveness', msg, ...fields };
   const out = level === 'error' || level === 'warn' ? process.stderr : process.stdout;
   try {
     out.write(JSON.stringify(line) + '\n');

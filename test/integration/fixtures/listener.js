@@ -7,7 +7,7 @@ pm2.connect(err => {
   pm2.launchBus((err, bus) => {
     if (err) { console.error('[listener] launchBus failed', err); process.exit(1); }
     console.log('[listener] subscribed');
-    bus.on('pm2-probe:status', m => {
+    bus.on('pm2-liveness:status', m => {
       console.log('[listener] EVENT ' + JSON.stringify(m.data));
     });
   });

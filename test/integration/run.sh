@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# End-to-end: break an instance, assert pm2-probe restarts ONLY that instance and
+# End-to-end: break an instance, assert pm2-liveness restarts ONLY that instance and
 # that the wire contract reaches a separate subscriber process.
 #
 # PM2_HOME must be SHORT. PM2 binds $PM2_HOME/rpc.sock and Linux caps unix socket
@@ -8,7 +8,7 @@
 set -u
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 FIX="$ROOT/test/integration/fixtures"
-export PM2_HOME="${PM2_HOME_OVERRIDE:-$HOME/.pm2-probe-it}"
+export PM2_HOME="${PM2_HOME_OVERRIDE:-$HOME/.pm2-liveness-it}"
 PM2="$ROOT/node_modules/.bin/pm2"
 P() { timeout 45 "$PM2" "$@"; }
 
@@ -43,7 +43,7 @@ P start "$FIX/listener.js" --name probe-listener >/dev/null 2>&1
 # Run the module the way PM2 runs it, with module config in the environment.
 APPS='{"probe-fixture":{"action":"restart","minHealthy":0,"liveness":{"http":{"path":"/health"},"periodSeconds":2,"timeoutSeconds":1,"failureThreshold":2}}}'
 apps="$APPS" logLevel=debug reconcileSeconds=5 \
-  P start "$ROOT/dist/index.js" --name pm2-probe >/dev/null 2>&1
+  P start "$ROOT/dist/index.js" --name pm2-liveness >/dev/null 2>&1
 sleep 6
 
 hr "baseline"
@@ -75,17 +75,17 @@ curl -s -m 2 http://127.0.0.1:3101/health | grep -q '"ok":true' \
 if P logs probe-listener --nostream --lines 50 2>/dev/null | grep -q '"state":"fail"'; then
   ok "wire contract reached a separate subscriber process"
 else
-  fail "no pm2-probe:status event observed by the listener"
+  fail "no pm2-liveness:status event observed by the listener"
 fi
 
-if P logs pm2-probe --nostream --lines 80 2>/dev/null | grep -q 'restarting instance'; then
+if P logs pm2-liveness --nostream --lines 80 2>/dev/null | grep -q 'restarting instance'; then
   ok "module logged the restart decision"
 else
   fail "module did not log a restart decision"
 fi
 
 hr "module log"
-P logs pm2-probe --nostream --lines 25 2>/dev/null | grep -v '^$' | tail -15
+P logs pm2-liveness --nostream --lines 25 2>/dev/null | grep -v '^$' | tail -15
 
 echo
 [ "$FAILED" -eq 0 ] && echo "INTEGRATION: ALL PASSED" || echo "INTEGRATION: FAILURES"

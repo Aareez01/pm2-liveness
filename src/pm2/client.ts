@@ -22,7 +22,7 @@ function resolvePm2(): Pm2Api {
     return require('pm2') as Pm2Api;
   } catch (err) {
     throw new Error(
-      'could not require("pm2"). pm2-probe is a PM2 module and needs the pm2 package ' +
+      'could not require("pm2"). pm2-liveness is a PM2 module and needs the pm2 package ' +
         'resolvable from its install directory. Original error: ' + (err as Error).message,
     );
   }

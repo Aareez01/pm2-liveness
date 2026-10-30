@@ -1,9 +1,9 @@
 /**
- * pm2-probe entry point.
+ * pm2-liveness entry point.
  *
- * Runs as an ordinary PM2-managed process (`pm2 install pm2-probe`). PM2 injects the
+ * Runs as an ordinary PM2-managed process (`pm2 install pm2-liveness`). PM2 injects the
  * module configuration as environment variables and restarts us automatically when
- * `pm2 set pm2-probe:<key>` changes one, so a restart is the normal config-reload path.
+ * `pm2 set pm2-liveness:<key>` changes one, so a restart is the normal config-reload path.
  */
 import { FSWatcher } from 'node:fs';
 import * as http from 'node:http';
@@ -42,7 +42,7 @@ async function main(): Promise<void> {
     });
   }
 
-  log.info('pm2-probe started', {
+  log.info('pm2-liveness started', {
     apps: Object.keys(loaded.config.apps).length,
     source: loaded.source,
   });

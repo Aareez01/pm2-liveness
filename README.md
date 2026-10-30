@@ -1,4 +1,4 @@
-# pm2-probe
+# pm2-liveness
 
 Active liveness and readiness probes for PM2. Detects hung-but-alive processes and
 restarts **only the failing instance**.
@@ -6,11 +6,11 @@ restarts **only the failing instance**.
 PM2 reports a process as `online` whenever its OS process is alive. A Node app with a
 blocked event loop, an exhausted connection pool, or one returning 503 to every request
 is `online` by that definition and will never be restarted. PM2's only health signals are
-*crash* and *memory ceiling*. `pm2-probe` adds the missing one.
+*crash* and *memory ceiling*. `pm2-liveness` adds the missing one.
 
 ```
-pm2 install pm2-probe
-pm2 set pm2-probe:apps '{"api":{"liveness":{"http":{"path":"/health"}}}}'
+pm2 install pm2-liveness
+pm2 set pm2-liveness:apps '{"api":{"liveness":{"http":{"path":"/health"}}}}'
 ```
 
 By default it **observes and reports but never restarts**. See [Actions](#actions).
@@ -32,13 +32,13 @@ discards everything else. Verified against PM2 7.1.1:
 | `pm2_ops: { ... }` | **No** |
 | `name`, `script`, `env`, `increment_var` | Yes |
 
-No warning is printed. The key simply vanishes. So `pm2-probe` is configured through one
+No warning is printed. The key simply vanishes. So `pm2-liveness` is configured through one
 of the two channels below instead.
 
 ### Channel 1 — module config (simple setups)
 
 ```bash
-pm2 set pm2-probe:apps '{"api":{"liveness":{"http":{"path":"/health"},"periodSeconds":10}}}'
+pm2 set pm2-liveness:apps '{"api":{"liveness":{"http":{"path":"/health"},"periodSeconds":10}}}'
 ```
 
 `pm2 set` restarts the module automatically, so the change takes effect immediately.
@@ -46,7 +46,7 @@ pm2 set pm2-probe:apps '{"api":{"liveness":{"http":{"path":"/health"},"periodSec
 ### Channel 2 — a sidecar file (recommended beyond a couple of apps)
 
 ```bash
-pm2 set pm2-probe:configFile /etc/pm2-probe/config.yaml
+pm2 set pm2-liveness:configFile /etc/pm2-liveness/config.yaml
 ```
 
 ```yaml
@@ -141,7 +141,7 @@ In PM2 cluster mode with a **shared** port, the primary routes each connection t
 arbitrary worker. An HTTP probe therefore cannot tell instances apart, and restarting a
 `pm_id` would be restarting an instance the probe never actually tested.
 
-`pm2-probe` detects this and **refuses to probe the app** rather than guessing:
+`pm2-liveness` detects this and **refuses to probe the app** rather than guessing:
 
 ```
 refusing to probe app  app=api
@@ -165,12 +165,12 @@ Other apps keep being probed normally — one misconfigured app never takes the 
 
 ## Events
 
-On every **transition** (never per tick) the module emits `pm2-probe:status` on the PM2 bus.
+On every **transition** (never per tick) the module emits `pm2-liveness:status` on the PM2 bus.
 Any process can consume it:
 
 ```js
 pm2.launchBus((err, bus) => {
-  bus.on('pm2-probe:status', (m) => console.log(m.data));
+  bus.on('pm2-liveness:status', (m) => console.log(m.data));
 });
 ```
 
@@ -197,7 +197,7 @@ consumers must tolerate unknown extra fields. New optional fields do not bump `v
 or retyping one does.
 
 > PM2 attaches its own `process` envelope to bus messages, and it identifies the **emitter**
-> (`pm2-probe`), not the subject. Read the app and instance from `data.app` / `data.pm_id`.
+> (`pm2-liveness`), not the subject. Read the app and instance from `data.app` / `data.pm_id`.
 
 ---
 
@@ -234,13 +234,13 @@ Recover by killing the daemon by PID (`pkill -f "God Daemon"`) and using a short
 
 ### The module starts but probes nothing
 
-Check `pm2 logs pm2-probe`. Apps with no probe configured are ignored entirely, and the
+Check `pm2 logs pm2-liveness`. Apps with no probe configured are ignored entirely, and the
 module logs the app names it loaded at boot.
 
 ### Config changes aren't taking effect
 
 `pm2 set` restarts the module for you. Hand-editing `~/.pm2/module_conf.json` does **not** —
-run `pm2 restart pm2-probe` after.
+run `pm2 restart pm2-liveness` after.
 
 ---
 
@@ -249,8 +249,12 @@ run `pm2 restart pm2-probe` after.
 - [`docs/requirements.md`](./docs/requirements.md) — the requirements this module was built
   against, including the reasoning behind the safety rails and two requirements that were
   revised once the implementation met reality.
-- The shared platform findings and the `pm2-probe:status` wire contract live in the
+- The shared platform findings and the `pm2-liveness:status` wire contract live in the
   **`pm2-ops-contract`** repository, because `pm2-alertmanager` is bound by the same contract.
+
+## Requirements
+
+Node 18 or newer — tested on 18, 20, 22, 24 and 26 — with PM2 5 or newer.
 
 ## Development
 

@@ -1,5 +1,5 @@
 /**
- * The pm2-probe -> consumer wire contract.
+ * The pm2-liveness -> consumer wire contract.
  *
  * This is a WIRE contract, not a shared library type: pm2-alertmanager lives in a
  * separate repo and carries its own copy. The normative definition is this file and
@@ -12,12 +12,12 @@
  *
  * Two constraints follow from the PM2 source:
  *  1. `type` and `data` must BOTH be truthy, or it degrades to a generic `process:msg`.
- *  2. The `process` envelope PM2 attaches identifies the EMITTER (pm2-probe), not the
+ *  2. The `process` envelope PM2 attaches identifies the EMITTER (pm2-liveness), not the
  *     subject. All subject identity must therefore live inside the payload - which is
  *     why `app` and `pm_id` are required fields.
  */
 
-export const PROBE_STATUS_EVENT = 'pm2-probe:status';
+export const PROBE_STATUS_EVENT = 'pm2-liveness:status';
 
 /** Bump only on a breaking change: removing a field or changing its type. */
 export const CONTRACT_VERSION = 1;

@@ -8,8 +8,8 @@ import { log } from '../log';
  * Two supported config channels (a `probe` block in ecosystem.config.js is NOT one of
  * them - PM2 strips unknown keys silently; see the README troubleshooting section):
  *
- *   1. Module config:  pm2 set pm2-probe:apps '<json>'
- *   2. Sidecar file:   pm2 set pm2-probe:configFile /etc/pm2-probe/config.yaml
+ *   1. Module config:  pm2 set pm2-liveness:apps '<json>'
+ *   2. Sidecar file:   pm2 set pm2-liveness:configFile /etc/pm2-liveness/config.yaml
  *
  * The sidecar file wins when both are present, and we log which one was used at boot.
  */
@@ -29,7 +29,7 @@ function fromModuleConfig(env: NodeJS.ProcessEnv): LoadedConfig {
   } catch (err) {
     throw new ConfigError([
       `apps: not valid JSON (${(err as Error).message}). ` +
-        `Set it with: pm2 set pm2-probe:apps '{"myapp":{...}}'`,
+        `Set it with: pm2 set pm2-liveness:apps '{"myapp":{...}}'`,
     ]);
   }
 
@@ -72,8 +72,8 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): LoadedConfig {
   });
   if (loaded.source === 'empty') {
     log.warn(
-      'no apps configured - pm2-probe is idle. ' +
-        "Configure with: pm2 set pm2-probe:apps '{\"myapp\":{\"liveness\":{\"http\":{\"path\":\"/health\"}}}}'",
+      'no apps configured - pm2-liveness is idle. ' +
+        "Configure with: pm2 set pm2-liveness:apps '{\"myapp\":{\"liveness\":{\"http\":{\"path\":\"/health\"}}}}'",
     );
   }
   return loaded;

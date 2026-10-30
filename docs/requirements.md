@@ -1,6 +1,6 @@
-# pm2-probe — Requirements
+# pm2-liveness — Requirements
 
-**Status:** Draft · **Date:** 2026-10-30 · **Repo:** `pm2-probe` (standalone) · **Licence:** MIT
+**Status:** Draft · **Date:** 2026-10-30 · **Repo:** `pm2-liveness` (standalone) · **Licence:** MIT
 
 Depends on the shared platform constraints and wire contract, which live in the
 **`pm2-ops-contract`** repository (`00-platform-and-contract.md`) because both this module
@@ -25,7 +25,7 @@ output.
 **Goals**
 - Detect unhealthy-but-alive processes and restart them, per cluster instance.
 - Expose aggregate readiness so an external load balancer can route correctly.
-- Emit `pm2-probe:status` events (per the shared contract) for other modules.
+- Emit `pm2-liveness:status` events (per the shared contract) for other modules.
 
 **Non-goals (v1)**
 - Alerting or notification of any kind — that is `pm2-alertmanager`'s job.
@@ -142,7 +142,7 @@ output.
 
 ### 3.6 Events
 
-- **REQ-PR-22** — Emit `pm2-probe:status` per the contract on every **transition** (`pass`→`fail`,
+- **REQ-PR-22** — Emit `pm2-liveness:status` per the contract on every **transition** (`pass`→`fail`,
   `fail`→`recovered`), never on every tick. Tick-level noise is the consumer's problem to not have.
 - **REQ-PR-23** — Emit with `action` set to what the probe actually did, so a consumer can distinguish
   "failed and restarted" from "failed and budget exhausted".
@@ -154,11 +154,11 @@ Per F1, a `probe` block in `ecosystem.config.js` **does not work**. Two supporte
 
 - **REQ-PR-25** — **Module config (primary).** A JSON blob under one key:
   ```
-  pm2 set pm2-probe:apps '{"api":{"liveness":{"http":"http://127.0.0.1:3000/health","periodSeconds":10}}}'
+  pm2 set pm2-liveness:apps '{"api":{"liveness":{"http":"http://127.0.0.1:3000/health","periodSeconds":10}}}'
   ```
   Per F3 this restarts the module automatically.
 - **REQ-PR-26** — **Sidecar file (recommended for non-trivial setups).**
-  `pm2 set pm2-probe:configFile /etc/pm2-probe/config.yaml`. YAML or JSON. The module watches the file
+  `pm2 set pm2-liveness:configFile /etc/pm2-liveness/config.yaml`. YAML or JSON. The module watches the file
   (debounced, 1 s) and reloads without restarting.
 - **REQ-PR-27** — Sidecar file takes precedence when both are present, and the module logs which one
   it used at boot.
@@ -198,7 +198,7 @@ Per F1, a `probe` block in `ecosystem.config.js` **does not work**. Two supporte
 3. An app whose health endpoint hangs (never responds) is restarted — proving timeout-as-failure.
 4. With `action: "none"`, no restart ever occurs but events are still emitted.
 5. Restart budget exhaustion stops restarts and is visible in `pm2 monit` counters.
-6. `pm2 set pm2-probe:apps '<invalid json>'` fails at boot with a message naming the problem.
+6. `pm2 set pm2-liveness:apps '<invalid json>'` fails at boot with a message naming the problem.
 7. Killing and restarting the module does not grant a long-running app a fresh `initialDelaySeconds`.
 8. Module steady-state RSS stays under 60 MB while probing 50 instances (NFR-1).
 
