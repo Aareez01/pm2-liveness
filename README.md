@@ -93,13 +93,24 @@ the module logs which one it used at boot.
 | `http` | `{ path, port, host, scheme, method, expectStatus, bodyMatch, headers, insecure }` | `port: auto` resolves per instance |
 | `tcp` | `{ port, host }` | succeeds on connect; writes nothing |
 | `exec` | `{ command, env }` | exit `0` passes; killed by process group on timeout |
-| `loopLag` | — | **not implemented in 0.1.0**, see below |
+| `loopLag` | `{ maxLagMs, metricName }` | reads PM2's own event-loop metric |
 
 A timeout counts as a failure, not an error to retry.
 
-`loopLag` requires the probed app to export event-loop metrics via `@pm2/io`. Rather than
-silently always-passing when the app isn't instrumented, it refuses to start. Use an HTTP
-probe against a route that reports its own lag instead.
+`loopLag` reads the event-loop figure PM2 already publishes. **PM2 7 populates
+`Event Loop Latency` (p50) and `Event Loop Latency p95` for every app with no
+instrumentation at all**, so this works out of the box:
+
+```yaml
+liveness:
+  loopLag: { maxLagMs: 200 }      # defaults to the p50 metric
+  failureThreshold: 3
+```
+
+Set `metricName` to target a specific metric, such as `Event Loop Latency p95`, or one
+your own instrumentation publishes. If the named metric is absent the app is **refused
+rather than probed** — a probe that reads "no data" as "healthy" reports health it never
+measured.
 
 ---
 

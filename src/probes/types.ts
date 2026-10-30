@@ -11,6 +11,11 @@ export interface ProbeTarget {
   /** Resolved listening port for this instance, when the probe needs one. */
   port: number | null;
   pmId: number;
+  /**
+   * The instance's `pm2_env.axm_monitor` map, populated only when the app reports
+   * metrics via @pm2/io. Empty for an uninstrumented app.
+   */
+  metrics?: Record<string, unknown>;
 }
 
 export interface Probe {

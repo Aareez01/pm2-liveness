@@ -1,5 +1,6 @@
 import { AppConfig } from '../config/schema';
 import { Pm2Process, resolvePort, isCluster } from '../pm2/types';
+import { findLagMetric } from '../probes/loopLag';
 
 /**
  * Cluster addressability guard (REQ-PR-11a).
@@ -72,4 +73,41 @@ export function checkClusterAddressability(
   }
 
   return null;
+}
+
+/**
+ * Event-loop instrumentation guard.
+ *
+ * A loopLag probe reads a metric the app publishes about itself. If the app is not
+ * instrumented the metric is simply absent, and a probe that treats "no data" as "no
+ * problem" is worse than no probe at all - it reports health it has never measured.
+ * So an uninstrumented app is refused rather than silently passed.
+ */
+export function checkLoopLagInstrumentation(
+  app: string,
+  cfg: AppConfig,
+  procs: Pm2Process[],
+): GuardViolation | null {
+  const defs = [cfg.liveness, cfg.readiness].filter((d) => d?.loopLag);
+  if (defs.length === 0) return null;
+
+  const metricName = defs[0]?.loopLag?.metricName;
+  const instrumented = procs.some((p) => {
+    const m = p.pm2_env?.axm_monitor as Record<string, unknown> | undefined;
+    return findLagMetric(m, metricName) !== null;
+  });
+  if (instrumented) return null;
+
+  return {
+    app,
+    reason: metricName
+      ? `a loopLag probe is configured with metricName "${metricName}", but no instance ` +
+        `reports a metric by that name`
+      : `a loopLag probe is configured, but no instance reports an event-loop metric`,
+    remedies: [
+      'instrument the app with @pm2/io so it publishes event-loop metrics to PM2',
+      'set `metricName` if your instrumentation uses a name this module does not recognise',
+      'use an http probe against a route that reports lag itself',
+    ],
+  };
 }

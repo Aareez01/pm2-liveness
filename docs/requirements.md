@@ -45,10 +45,18 @@ output.
 - **REQ-PR-03** — **Exec probe.** Run a command; exit code `0` is pass. Command runs with a hard
   timeout and is killed by process group on expiry. Must not inherit the module's env wholesale —
   pass an explicit env to avoid leaking module config into the probed command.
-- **REQ-PR-04** — **Event-loop-lag probe.** Requires the app to be instrumented. Since the module
-  cannot measure another process's event loop directly, v1 derives this from `pm2.list()` →
-  `monit`/axm metrics where the app uses `@pm2/io`. **If the app is not instrumented, this probe type
-  must refuse to start with a clear message** rather than silently always-pass.
+- **REQ-PR-04** — **Event-loop-lag probe.** A process cannot measure another process's event loop, so
+  this reads the figure PM2 publishes in `pm2_env.axm_monitor`.
+
+  *Corrected after testing.* This requirement originally said the app "requires instrumentation"
+  with `@pm2/io`. That is **false on PM2 7**, which publishes `Event Loop Latency` (p50) and
+  `Event Loop Latency p95` for every app unprompted — verified by reading a live `jlist` for an app
+  that sends nothing. The feature therefore works out of the box, and the assumption that gated it
+  was never checked.
+
+  The metric NAME still comes from instrumentation rather than from PM2's API, so it is matched by
+  pattern with an optional `metricName` override. **If no matching metric exists the app is refused,
+  not probed** — a probe that treats "no data" as "healthy" reports health it never measured.
 
 ### 3.2 Scheduling and state machine
 

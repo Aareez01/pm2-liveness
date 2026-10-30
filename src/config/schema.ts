@@ -35,6 +35,12 @@ const execProbe = z.object({
 
 const loopLagProbe = z.object({
   maxLagMs: z.number().int().positive().default(1000),
+  /**
+   * Exact axm_monitor metric name to read. When omitted, the first metric whose name
+   * looks like an event-loop latency/lag/delay figure is used. Set this explicitly if
+   * your instrumentation names it something unusual.
+   */
+  metricName: z.string().optional(),
 });
 
 const probeDef = z
@@ -110,6 +116,7 @@ export type ProbeConfig = z.infer<typeof configSchema>;
 export type HttpProbeDef = z.infer<typeof httpProbe>;
 export type TcpProbeDef = z.infer<typeof tcpProbe>;
 export type ExecProbeDef = z.infer<typeof execProbe>;
+export type LoopLagProbeDef = z.infer<typeof loopLagProbe>;
 
 export class ConfigError extends Error {
   constructor(public readonly issues: string[]) {

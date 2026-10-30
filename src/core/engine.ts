@@ -4,7 +4,7 @@ import { Pm2Process, resolvePort, isModule } from '../pm2/types';
 import { buildProbe, Probe } from '../probes';
 import { ProbeKind, ProbeType } from '../events/contract';
 import { emitProbeStatus } from '../events/emit';
-import { checkClusterAddressability } from './guards';
+import { checkClusterAddressability, checkLoopLagInstrumentation } from './guards';
 import { InstanceHealth } from './state';
 import { RestartBudget } from './budget';
 import { canRestart } from './quorum';
@@ -92,7 +92,9 @@ export class Engine {
       );
       if (procs.length === 0) continue;
 
-      const violation = checkClusterAddressability(appName, cfg, procs);
+      const violation =
+        checkClusterAddressability(appName, cfg, procs) ??
+        checkLoopLagInstrumentation(appName, cfg, procs);
       if (violation) {
         // Topology problem, not a config-file problem: refuse to probe this app, keep
         // the module up for every other app (NFR-2).
@@ -202,7 +204,11 @@ export class Engine {
 
       const port = resolvePort(proc);
       const result = await w.probe.run(
-        { port, pmId: w.pmId },
+        {
+          port,
+          pmId: w.pmId,
+          metrics: proc.pm2_env?.axm_monitor as Record<string, unknown> | undefined,
+        },
         Math.round(w.def.timeoutSeconds * 1000),
       );
       metrics.set('lastProbeLatencyMs', result.latencyMs);

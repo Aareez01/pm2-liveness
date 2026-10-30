@@ -1,5 +1,8 @@
 import * as http from 'node:http';
-import { Engine } from '../core/engine';
+/** Just enough of the Engine to serve cached state - keeps this unit-testable. */
+export interface SnapshotSource {
+  readonly snapshot: Map<string, { live: boolean; ready: boolean; total: number }>;
+}
 import { log } from '../log';
 
 /**
@@ -13,7 +16,7 @@ import { log } from '../log';
  * check becomes an amplification vector against the app it is supposed to protect.
  */
 export function startEndpoint(
-  engine: Engine,
+  engine: SnapshotSource,
   opts: { host: string; port: number },
 ): http.Server {
   const server = http.createServer((req, res) => {
@@ -42,7 +45,10 @@ export function startEndpoint(
   });
 
   server.listen(opts.port, opts.host, () => {
-    log.info('health endpoint listening', { host: opts.host, port: opts.port });
+    // Report the port actually bound - opts.port may be 0 (ephemeral).
+    const addr = server.address();
+    const bound = addr && typeof addr === 'object' ? addr.port : opts.port;
+    log.info('health endpoint listening', { host: opts.host, port: bound });
     if (opts.host !== '127.0.0.1' && opts.host !== 'localhost') {
       log.warn('health endpoint is NOT bound to loopback - it is reachable from the network', {
         host: opts.host,
