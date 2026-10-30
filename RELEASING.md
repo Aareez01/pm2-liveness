@@ -2,7 +2,7 @@
 
 ## Before the first publish
 
-1. **Create the GitHub repository**, then set the URL fields — they are deliberately
+1. **Create the GitHub repository**, then set the URL fields - they are deliberately
    absent rather than guessed, because a wrong URL in published metadata is worse than
    none:
 
@@ -14,8 +14,7 @@
    ```
 
 2. **Confirm the author field.** It is currently `Aareez01`, taken from the git identity
-   used for these commits (`aareez@hypremia.com`), which differs from the account this
-   work was done under. Change it if that is not the identity you want published.
+   used for these commits. Change it if that is not the identity you want published.
 
 3. `npm login` as the account that should own the package.
 
@@ -53,6 +52,6 @@ echo -n "$PM2_HOME/rpc.sock" | wc -c   # must be < 107
 - [ ] `CHANGELOG.md` updated, version bumped
 - [ ] `npm pack --dry-run` contains `dist/`, `README.md`, `LICENSE` and nothing else
 - [ ] Unit **and** integration tests pass locally
-- [ ] The suite lab (`pm2-ops-contract/lab`) passes — it is the only thing that exercises
+- [ ] The suite lab (`pm2-ops-contract/lab`) passes - it is the only thing that exercises
       this module the way a user installs it, through `pm2 install`
 - [ ] Repository/bugs/homepage set (first publish only)

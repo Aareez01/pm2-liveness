@@ -35,7 +35,7 @@ discards everything else. Verified against PM2 7.1.1:
 No warning is printed. The key simply vanishes. So `pm2-liveness` is configured through one
 of the two channels below instead.
 
-### Channel 1 — module config (simple setups)
+### Channel 1 - module config (simple setups)
 
 ```bash
 pm2 set pm2-liveness:apps '{"api":{"liveness":{"http":{"path":"/health"},"periodSeconds":10}}}'
@@ -43,7 +43,7 @@ pm2 set pm2-liveness:apps '{"api":{"liveness":{"http":{"path":"/health"},"period
 
 `pm2 set` restarts the module automatically, so the change takes effect immediately.
 
-### Channel 2 — a sidecar file (recommended beyond a couple of apps)
+### Channel 2 - a sidecar file (recommended beyond a couple of apps)
 
 ```bash
 pm2 set pm2-liveness:configFile /etc/pm2-liveness/config.yaml
@@ -109,7 +109,7 @@ liveness:
 
 Set `metricName` to target a specific metric, such as `Event Loop Latency p95`, or one
 your own instrumentation publishes. If the named metric is absent the app is **refused
-rather than probed** — a probe that reads "no data" as "healthy" reports health it never
+rather than probed** - a probe that reads "no data" as "healthy" reports health it never
 measured.
 
 ---
@@ -127,7 +127,7 @@ Three safety rails apply when `action: restart`:
 - **Per-instance only.** A trip restarts the one failing instance via `pm2.restart(pm_id)`,
   never the whole app.
 - **Restart budget.** At most `max` restarts per instance per `windowSeconds` (default 3 per
-  10 min). On exhaustion the module gives up on that instance and keeps emitting events —
+  10 min). On exhaustion the module gives up on that instance and keeps emitting events -
   restart-looping a broken app forever is worse than not restarting it.
 - **Quorum.** A restart is blocked if it would leave fewer than `minHealthy` instances
   serving. `auto` means `max(1, floor(instances / 2))` for clusters and `0` for a
@@ -159,7 +159,7 @@ Three ways to resolve it:
 2. an `exec` probe, which receives `PM2_PROBE_PM_ID` and targets the instance directly;
 3. `scope: 'app'`, accepting app-level probing (a trip then restarts the whole app).
 
-Other apps keep being probed normally — one misconfigured app never takes the module down.
+Other apps keep being probed normally - one misconfigured app never takes the module down.
 
 ---
 
@@ -222,7 +222,7 @@ an amplification vector against your app.
 Your `PM2_HOME` path is too long. PM2 binds `$PM2_HOME/rpc.sock`, and Linux caps unix socket
 paths (`sun_path`) at **107 characters**. Over that limit the bind fails *silently*: the
 daemon starts and writes `pm2.pid` and `logs/`, but no `.sock` file is ever created and every
-client — including `pm2 kill` — blocks forever. The orphaned daemon spins at 100% CPU.
+client - including `pm2 kill` - blocks forever. The orphaned daemon spins at 100% CPU.
 
 ```bash
 echo -n "$PM2_HOME/rpc.sock" | wc -c     # must be < 107
@@ -239,14 +239,14 @@ module logs the app names it loaded at boot.
 
 ### Config changes aren't taking effect
 
-`pm2 set` restarts the module for you. Hand-editing `~/.pm2/module_conf.json` does **not** —
+`pm2 set` restarts the module for you. Hand-editing `~/.pm2/module_conf.json` does **not** -
 run `pm2 restart pm2-liveness` after.
 
 ---
 
 ## Design documentation
 
-- [`docs/requirements.md`](./docs/requirements.md) — the requirements this module was built
+- [`docs/requirements.md`](./docs/requirements.md) - the requirements this module was built
   against, including the reasoning behind the safety rails and two requirements that were
   revised once the implementation met reality.
 - The shared platform findings and the `pm2-liveness:status` wire contract live in the
@@ -254,7 +254,7 @@ run `pm2 restart pm2-liveness` after.
 
 ## Requirements
 
-Node 18 or newer — tested on 18, 20, 22, 24 and 26 — with PM2 5 or newer.
+Node 18 or newer - tested on 18, 20, 22, 24 and 26 - with PM2 5 or newer.
 
 ## Development
 
