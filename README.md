@@ -24,6 +24,18 @@ By default it **observes and reports but never restarts**. See [Actions](#action
 A two-instance app. One instance starts returning 503 while its process stays
 perfectly alive - the exact case PM2 cannot see.
 
+![pm2-liveness detecting a hung instance and restarting it](./demo/demo.svg)
+
+PM2 reported both instances as `online` with zero restarts the whole time. That is
+not a bug in PM2: a crash and a memory ceiling are the only health signals it has.
+
+Instance 1 came back with a new pid and a reset uptime. **Instance 0 was never
+touched** - which is the part that matters, because restarting a whole app to fix
+one bad worker is its own outage.
+
+<details>
+<summary>The same run as copyable text</summary>
+
 ```
 1. Start an app with two instances
   instance 0  pid 259017  up 3s
@@ -53,12 +65,7 @@ $ curl -s http://127.0.0.1:3001/health
 {"ok":true,"pid":259327}
 ```
 
-PM2 reported both instances as `online` with zero restarts the whole time. That is
-not a bug in PM2: a crash and a memory ceiling are the only health signals it has.
-
-Instance 1 came back with a new pid and a reset uptime. **Instance 0 was never
-touched** - which is the part that matters, because restarting a whole app to fix
-one bad worker is its own outage.
+</details>
 
 Run it yourself - it is self-contained, uses an isolated `PM2_HOME`, binds only to
 loopback, and cleans up after itself:
@@ -68,8 +75,8 @@ git clone https://github.com/Aareez01/pm2-liveness
 cd pm2-liveness/demo && ./demo.sh
 ```
 
-`demo/demo.cast` is an [asciinema](https://asciinema.org) recording of the same run,
-if you would rather watch it than run it.
+The recording is `demo/demo.cast` ([asciinema](https://asciinema.org) format) and the
+animation above is generated from it by `demo/cast2svg.py`.
 
 ## Why can't I configure this in `ecosystem.config.js`?
 

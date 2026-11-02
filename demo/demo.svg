@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="682" height="606" viewBox="0 0 682 606" font-family="SFMono-Regular,Consolas,Liberation Mono,Menlo,monospace" font-size="14.0">
+<style>@keyframes a0{0%,0.00%{opacity:0}0.40%,100%{opacity:1}}.l0{animation:a0 8.18s steps(1,end) infinite}@keyframes a1{0%,7.82%{opacity:0}8.22%,100%{opacity:1}}.l1{animation:a1 8.18s steps(1,end) infinite}@keyframes a2{0%,22.49%{opacity:0}22.89%,100%{opacity:1}}.l2{animation:a2 8.18s steps(1,end) infinite}@keyframes a3{0%,22.49%{opacity:0}22.89%,100%{opacity:1}}.l3{animation:a3 8.18s steps(1,end) infinite}@keyframes a4{0%,22.49%{opacity:0}22.89%,100%{opacity:1}}.l4{animation:a4 8.18s steps(1,end) infinite}@keyframes a5{0%,22.54%{opacity:0}22.94%,100%{opacity:1}}.l5{animation:a5 8.18s steps(1,end) infinite}@keyframes a6{0%,37.21%{opacity:0}37.61%,100%{opacity:1}}.l6{animation:a6 8.18s steps(1,end) infinite}@keyframes a7{0%,37.21%{opacity:0}37.61%,100%{opacity:1}}.l7{animation:a7 8.18s steps(1,end) infinite}@keyframes a8{0%,37.21%{opacity:0}37.61%,100%{opacity:1}}.l8{animation:a8 8.18s steps(1,end) infinite}@keyframes a9{0%,37.22%{opacity:0}37.62%,100%{opacity:1}}.l9{animation:a9 8.18s steps(1,end) infinite}@keyframes a10{0%,37.31%{opacity:0}37.71%,100%{opacity:1}}.l10{animation:a10 8.18s steps(1,end) infinite}@keyframes a11{0%,37.31%{opacity:0}37.71%,100%{opacity:1}}.l11{animation:a11 8.18s steps(1,end) infinite}@keyframes a12{0%,37.32%{opacity:0}37.72%,100%{opacity:1}}.l12{animation:a12 8.18s steps(1,end) infinite}@keyframes a13{0%,39.89%{opacity:0}40.29%,100%{opacity:1}}.l13{animation:a13 8.18s steps(1,end) infinite}@keyframes a14{0%,39.89%{opacity:0}40.29%,100%{opacity:1}}.l14{animation:a14 8.18s steps(1,end) infinite}@keyframes a15{0%,39.95%{opacity:0}40.35%,100%{opacity:1}}.l15{animation:a15 8.18s steps(1,end) infinite}@keyframes a16{0%,39.95%{opacity:0}40.35%,100%{opacity:1}}.l16{animation:a16 8.18s steps(1,end) infinite}@keyframes a17{0%,39.95%{opacity:0}40.35%,100%{opacity:1}}.l17{animation:a17 8.18s steps(1,end) infinite}@keyframes a18{0%,54.62%{opacity:0}55.02%,100%{opacity:1}}.l18{animation:a18 8.18s steps(1,end) infinite}@keyframes a19{0%,69.29%{opacity:0}69.69%,100%{opacity:1}}.l19{animation:a19 8.18s steps(1,end) infinite}@keyframes a20{0%,69.29%{opacity:0}69.69%,100%{opacity:1}}.l20{animation:a20 8.18s steps(1,end) infinite}@keyframes a21{0%,69.29%{opacity:0}69.69%,100%{opacity:1}}.l21{animation:a21 8.18s steps(1,end) infinite}@keyframes a22{0%,69.35%{opacity:0}69.75%,100%{opacity:1}}.l22{animation:a22 8.18s steps(1,end) infinite}@keyframes a23{0%,69.35%{opacity:0}69.75%,100%{opacity:1}}.l23{animation:a23 8.18s steps(1,end) infinite}@keyframes a24{0%,69.35%{opacity:0}69.75%,100%{opacity:1}}.l24{animation:a24 8.18s steps(1,end) infinite}@keyframes a25{0%,69.35%{opacity:0}69.75%,100%{opacity:1}}.l25{animation:a25 8.18s steps(1,end) infinite}@keyframes a26{0%,69.44%{opacity:0}69.84%,100%{opacity:1}}.l26{animation:a26 8.18s steps(1,end) infinite}</style>
+<rect width="682" height="606" rx="10" fill="#0d1117"/>
+<circle cx="24" cy="22" r="6" fill="#ff5f57"/><circle cx="44" cy="22" r="6" fill="#febc2e"/><circle cx="64" cy="22" r="6" fill="#28c840"/>
+<text x="341" y="27" fill="#6e7681" font-size="12" text-anchor="middle">pm2-liveness: a hung instance, detected and restarted</text>
+<text class="l0" y="64.0"></text>
+<text class="l1" y="84.0"><tspan x="22.0" fill="#56d4dd" font-weight="600">1. Start an app with two instances</tspan></text>
+<text class="l2" y="104.0"><tspan x="22.0" fill="#c9d1d9">  instance 0  pid 259017  up 3s</tspan></text>
+<text class="l3" y="124.0"><tspan x="22.0" fill="#c9d1d9">  instance 1  pid 259024  up 3s</tspan></text>
+<text class="l4" y="144.0"></text>
+<text class="l5" y="164.0"><tspan x="22.0" fill="#56d4dd" font-weight="600">2. Install pm2-liveness and point it at /health</tspan></text>
+<text class="l6" y="184.0"><tspan x="22.0" fill="#c9d1d9">  watching /health on every instance, every 2s</tspan></text>
+<text class="l7" y="204.0"></text>
+<text class="l8" y="224.0"><tspan x="22.0" fill="#56d4dd" font-weight="600">3. Break instance 1 - it returns 503 but the process stays alive</tspan></text>
+<text class="l9" y="244.0"><tspan x="22.0" fill="#6e7681">$ curl -s http://127.0.0.1:3001/break</tspan></text>
+<text class="l10" y="264.0"><tspan x="22.0" fill="#c9d1d9">broken</tspan></text>
+<text class="l11" y="284.0"></text>
+<text class="l12" y="304.0"><tspan x="22.0" fill="#c9d1d9">  PM2&#x27;s own view, which is the whole problem:</tspan></text>
+<text class="l13" y="324.0"><tspan x="22.0" fill="#c9d1d9">  instance 0  status online  restarts 0</tspan></text>
+<text class="l14" y="344.0"><tspan x="22.0" fill="#c9d1d9">  instance 1  status online  restarts 0</tspan></text>
+<text class="l15" y="364.0"><tspan x="22.0" fill="#c9d1d9">  ...both still &#x27;online&#x27;. PM2 only sees crashes and memory limits.</tspan></text>
+<text class="l16" y="384.0"></text>
+<text class="l17" y="404.0"><tspan x="22.0" fill="#56d4dd" font-weight="600">4. pm2-liveness notices, and restarts only the broken instance</tspan></text>
+<text class="l18" y="424.0"><tspan x="22.0" fill="#c9d1d9">  restarting instance  app=api pm_id=1 reason=status 503</tspan></text>
+<text class="l19" y="444.0"><tspan x="22.0" fill="#c9d1d9">  instance 0  pid 259017  up 20s</tspan></text>
+<text class="l20" y="464.0"><tspan x="22.0" fill="#c9d1d9">  instance 1  pid 259327  up 4s</tspan></text>
+<text class="l21" y="484.0"></text>
+<text class="l22" y="504.0"><tspan x="22.0" fill="#c9d1d9">  instance 1 has a new pid and a reset uptime. Instance 0 was never touched.</tspan></text>
+<text class="l23" y="524.0"></text>
+<text class="l24" y="544.0"><tspan x="22.0" fill="#56d4dd" font-weight="600">5. And it is serving again</tspan></text>
+<text class="l25" y="564.0"><tspan x="22.0" fill="#6e7681">$ curl -s http://127.0.0.1:3001/health</tspan></text>
+<text class="l26" y="584.0"><tspan x="22.0" fill="#c9d1d9">{&quot;ok&quot;:true,&quot;pid&quot;:259327}</tspan></text>
+</svg>
