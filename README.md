@@ -19,6 +19,58 @@ By default it **observes and reports but never restarts**. See [Actions](#action
 
 ---
 
+## See it work
+
+A two-instance app. One instance starts returning 503 while its process stays
+perfectly alive - the exact case PM2 cannot see.
+
+```
+1. Start an app with two instances
+  instance 0  pid 259017  up 3s
+  instance 1  pid 259024  up 3s
+
+2. Install pm2-liveness and point it at /health
+  watching /health on every instance, every 2s
+
+3. Break instance 1 - it returns 503 but the process stays alive
+$ curl -s http://127.0.0.1:3001/break
+broken
+
+  PM2's own view, which is the whole problem:
+  instance 0  status online  restarts 0
+  instance 1  status online  restarts 0
+  ...both still 'online'. PM2 only sees crashes and memory limits.
+
+4. pm2-liveness notices, and restarts only the broken instance
+  restarting instance  app=api pm_id=1 reason=status 503
+  instance 0  pid 259017  up 20s
+  instance 1  pid 259327  up 4s
+
+  instance 1 has a new pid and a reset uptime. Instance 0 was never touched.
+
+5. And it is serving again
+$ curl -s http://127.0.0.1:3001/health
+{"ok":true,"pid":259327}
+```
+
+PM2 reported both instances as `online` with zero restarts the whole time. That is
+not a bug in PM2: a crash and a memory ceiling are the only health signals it has.
+
+Instance 1 came back with a new pid and a reset uptime. **Instance 0 was never
+touched** - which is the part that matters, because restarting a whole app to fix
+one bad worker is its own outage.
+
+Run it yourself - it is self-contained, uses an isolated `PM2_HOME`, binds only to
+loopback, and cleans up after itself:
+
+```bash
+git clone https://github.com/Aareez01/pm2-liveness
+cd pm2-liveness/demo && ./demo.sh
+```
+
+`demo/demo.cast` is an [asciinema](https://asciinema.org) recording of the same run,
+if you would rather watch it than run it.
+
 ## Why can't I configure this in `ecosystem.config.js`?
 
 **Because PM2 would silently throw your configuration away.**
