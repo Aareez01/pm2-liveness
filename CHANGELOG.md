@@ -3,14 +3,23 @@
 All notable changes to this project are documented here.
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.1.1] - 2026-11-03
+## [0.2.0] - 2026-11-04
+
+### Removed
+
+- **Node 18 and 20 are no longer supported**; `engines.node` is now `>=22`. Both are past
+  end of life, and the test runner required by the zod upgrade below cannot execute on
+  them. Claiming a version that cannot be run is worse than not claiming it, so the claim
+  was dropped rather than left asserted but unverified. `0.1.0` remains available and
+  still declares `>=18` for anyone pinned to an older runtime, but it ships the affected
+  zod and will not be patched.
 
 ### Security
 
 - **zod upgraded from 3.x to 4.6.7** (GHSA-mrhx-c7xc-m3w5, high). zod below 4.6.6
   accumulates one issue object per failing array element with no cap, so a large array
   of invalid values can exhaust memory. `0.1.0` shipped `zod ^3.23.8` and is affected;
-  upgrade to `0.1.1`.
+  upgrade to `0.2.0`.
 - **Array schemas now carry explicit length caps.** The upgrade alone is not sufficient:
   the 4.6.6 fix is an early exit when a *length constraint* fails, so an unconstrained
   array still accumulates unbounded issues on 4.6.7. Measured, 300k failing elements:

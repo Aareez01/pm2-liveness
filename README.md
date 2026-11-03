@@ -1,6 +1,6 @@
 # pm2-liveness
 
-[![npm](https://img.shields.io/npm/v/pm2-liveness)](https://www.npmjs.com/package/pm2-liveness) [![CI](https://github.com/Aareez01/pm2-liveness/actions/workflows/ci.yml/badge.svg)](https://github.com/Aareez01/pm2-liveness/actions/workflows/ci.yml) [![licence: MIT](https://img.shields.io/badge/licence-MIT-blue.svg)](./LICENSE) [![node](https://img.shields.io/badge/node-%3E%3D18-brightgreen)](#requirements)
+[![npm](https://img.shields.io/npm/v/pm2-liveness)](https://www.npmjs.com/package/pm2-liveness) [![CI](https://github.com/Aareez01/pm2-liveness/actions/workflows/ci.yml/badge.svg)](https://github.com/Aareez01/pm2-liveness/actions/workflows/ci.yml) [![licence: MIT](https://img.shields.io/badge/licence-MIT-blue.svg)](./LICENSE) [![node](https://img.shields.io/badge/node-%3E%3D22-brightgreen)](#requirements)
 
 Active liveness and readiness probes for PM2. Detects hung-but-alive processes and
 restarts **only the failing instance**.
@@ -315,7 +315,7 @@ run `pm2 restart pm2-liveness` after.
 
 ## Requirements
 
-Node 18 or newer - tested on 18, 20, 22, 24 and 26 - with PM2 5 or newer.
+Node 22 or newer - tested on 22, 24 and 26 - with PM2 5 or newer.
 
 ## Development
 

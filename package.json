@@ -1,6 +1,6 @@
 {
   "name": "pm2-liveness",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "Active liveness and readiness probes for PM2. Detects hung-but-alive processes and restarts the failing instance.",
   "keywords": [
     "pm2",
@@ -15,7 +15,7 @@
   "author": "Aareez01",
   "main": "dist/index.js",
   "engines": {
-    "node": ">=18"
+    "node": ">=22"
   },
   "files": [
     "dist",
