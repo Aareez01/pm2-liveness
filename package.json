@@ -79,5 +79,6 @@
   "bugs": {
     "url": "https://github.com/Aareez01/pm2-liveness/issues"
   },
-  "homepage": "https://github.com/Aareez01/pm2-liveness#readme"
+  "homepage": "https://github.com/Aareez01/pm2-liveness#readme",
+  "types": "dist/index.d.ts"
 }
