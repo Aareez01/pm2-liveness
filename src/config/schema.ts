@@ -18,7 +18,7 @@ const httpProbe = z.object({
   method: z.string().default('GET'),
   expectStatus: z.tuple([z.number().int(), z.number().int()]).default([200, 399]),
   bodyMatch: z.string().optional(),
-  headers: z.record(z.string()).default({}),
+  headers: z.record(z.string(), z.string()).default({}),
   insecure: z.boolean().default(false),
 });
 
@@ -30,7 +30,7 @@ const tcpProbe = z.object({
 const execProbe = z.object({
   command: z.string().min(1),
   /** Explicit env only - we never leak the module's own environment into a probed command. */
-  env: z.record(z.string()).default({}),
+  env: z.record(z.string(), z.string()).default({}),
 });
 
 const loopLagProbe = z.object({
@@ -98,7 +98,7 @@ const appConfig = z
   });
 
 export const configSchema = z.object({
-  apps: z.record(appConfig).default({}),
+  apps: z.record(z.string(), appConfig).default({}),
   logLevel: z.enum(['debug', 'info', 'warn', 'error']).default('info'),
   reconcileSeconds: z.number().int().positive().default(30),
   endpoint: z

@@ -3,6 +3,30 @@
 All notable changes to this project are documented here.
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.1] - 2026-11-03
+
+### Security
+
+- **zod upgraded from 3.x to 4.6.7** (GHSA-mrhx-c7xc-m3w5, high). zod below 4.6.6
+  accumulates one issue object per failing array element with no cap, so a large array
+  of invalid values can exhaust memory. `0.1.0` shipped `zod ^3.23.8` and is affected;
+  upgrade to `0.1.1`.
+- **Array schemas now carry explicit length caps.** The upgrade alone is not sufficient:
+  the 4.6.6 fix is an early exit when a *length constraint* fails, so an unconstrained
+  array still accumulates unbounded issues on 4.6.7. Measured, 300k failing elements:
+  3.25.76 unconstrained 300,000 issues / 97 MB; 4.6.7 unconstrained 300,000 issues /
+  137 MB; 4.6.7 with `.max()` 1 issue / 0 MB. Both halves are required.
+
+  This was **not exploitable in this module**: the only zod input is the operator's own
+  config file, and anyone who can write it can already set an `exec` probe command,
+  which is arbitrary code execution. Fixed so consumers' `npm audit` is clean and the
+  parser is bounded regardless of input source.
+
+### Changed
+
+- `vitest` upgraded to 5.x, clearing a critical prototype-pollution advisory in
+  `tinypool` (GHSA-5gmw-xhrv-c9v3). Development only; it never shipped.
+
 ## [0.1.0] - 2026-10-30
 
 First release.
