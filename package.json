@@ -1,6 +1,6 @@
 {
   "name": "pm2-liveness",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Active liveness and readiness probes for PM2. Detects hung-but-alive processes and restarts the failing instance.",
   "keywords": [
     "pm2",
