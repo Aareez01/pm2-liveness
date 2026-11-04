@@ -330,6 +330,22 @@ The integration harness starts a two-instance cluster app, breaks one instance, 
 that only the failing instance is restarted and that the event reaches a separate subscriber
 process. It uses an isolated `PM2_HOME` and asserts the socket-path limit up front.
 
+## The rest of the suite
+
+`pm2-liveness` is one of five independent PM2 modules. They install, version and run separately -
+none depends on another - but they are built against one shared set of verified PM2
+platform findings, so they behave consistently and do not fight each other.
+
+| Module | What it does |
+| --- | --- |
+| [`pm2-alertmanager`](https://github.com/Aareez01/pm2-alertmanager) | crash and probe alerts, deduplicated and routed |
+| [`pm2-shipper`](https://github.com/Aareez01/pm2-shipper) | log shipping that survives rotation |
+| [`pm2-secrets`](https://github.com/Aareez01/pm2-secrets) | secrets fetched from a vault and injected at restart |
+| [`pm2-release`](https://github.com/Aareez01/pm2-release) | health-gated, rolling deploys with automatic rollback |
+
+`pm2-liveness` publishes a verdict on the PM2 bus that `pm2-alertmanager` and `pm2-release`
+both consume, which is the one place the modules genuinely talk to each other.
+
 ## License
 
 MIT
