@@ -21,21 +21,40 @@
 
 ## Every release
 
+Publishing happens in CI, not from a laptop. Pushing a `v*` tag runs
+[`.github/workflows/release.yml`](./.github/workflows/release.yml), which builds, tests
+and publishes with **provenance** - a signed attestation linking the tarball on npm back
+to the commit it was built from. A hand-published package carries no such link: the
+registry signs what it receives, which proves only that storage did not tamper with it.
+
 ```bash
 npm ci
 npm run build
-npm test                   # unit
-npm run test:integration   # needs a short PM2_HOME; see below
+npm test
 npm pack --dry-run         # check what actually ships
-```
 
-Then:
-
-```bash
 npm version <patch|minor|major>
-npm publish                # publishConfig.access is already public
-git push && git push --tags
+git push && git push --tags      # the tag is what triggers the publish
 ```
+
+The workflow refuses to publish if the tag disagrees with `package.json`, or if the
+version is already on the registry. npm versions are immutable once taken, so both
+checks are cheaper than the mistake.
+
+### One-time setup per package
+
+Trusted publishing must be enabled on npmjs.com before the first CI publish, or the job
+fails to authenticate:
+
+1. npmjs.com -> the package -> **Settings** -> **Trusted Publisher**
+2. Publisher: **GitHub Actions**
+3. Organization or user: `Aareez01`, Repository: this repo
+4. Workflow filename: `release.yml` (no path, just the filename)
+5. Environment: leave blank
+
+There is deliberately no `NODE_AUTH_TOKEN`. Authentication is a short-lived OIDC
+exchange, so there is no long-lived credential in the repository to steal - which is the
+point of doing it this way rather than storing a publish token.
 
 ## PM2_HOME must be short
 
@@ -55,4 +74,6 @@ echo -n "$PM2_HOME/rpc.sock" | wc -c   # must be < 107
 - [ ] Unit **and** integration tests pass locally
 - [ ] The suite lab (`pm2-ops-contract/lab`) passes - it is the only thing that exercises
       this module the way a user installs it, through `pm2 install`
+- [ ] Trusted publishing configured on npmjs.com (first publish only)
 - [ ] Repository/bugs/homepage set (first publish only)
+- [ ] After the tag lands: the npm page shows a provenance attestation
